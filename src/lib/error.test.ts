@@ -1,5 +1,6 @@
-import type { GetCommandInput } from '@aws-sdk/lib-dynamodb';
 import * as P from '@konker.dev/effect-ts-prelude';
+
+import type { GetCommandInput } from '@aws-sdk/lib-dynamodb';
 
 import * as unit from './error';
 

@@ -1,7 +1,7 @@
-/* eslint-disable fp/no-let,fp/no-mutation */
+import * as P from '@konker.dev/effect-ts-prelude';
+
 import * as dynamodb from '@aws-sdk/client-dynamodb';
 import * as dynamodbLib from '@aws-sdk/lib-dynamodb';
-import * as P from '@konker.dev/effect-ts-prelude';
 import { mockClient } from 'aws-sdk-client-mock';
 
 import * as unit from './index';

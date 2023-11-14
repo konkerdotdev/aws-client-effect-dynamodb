@@ -69,7 +69,12 @@
     "import/no-unresolved": "off",
     "import/order": "off",
     "import/named": "off",
-    "simple-import-sort/imports": "warn",
+    "simple-import-sort/imports": [
+      "warn",
+      {
+        "groups": [["^\\u0000"], ["^@konker.dev/effect-ts-prelude"], ["^[^.]"], ["^\\."]]
+      }
+    ],
     "sort-destructure-keys/sort-destructure-keys": "error",
     "prettier/prettier": [
       "error",
@@ -88,13 +93,15 @@
       },
       "rules": {
         "fp/no-unused-expression": "off",
-        "fp/no-nil": 0
+        "fp/no-nil": "off",
+        "fp/no-let": "off",
+        "fp/no-mutation": "off"
       }
     },
     {
       "files": ["types/**/*.d.ts"],
       "rules": {
-        "import/no-default-export": 0
+        "import/no-default-export": "off"
       }
     }
   ]

@@ -1,7 +1,8 @@
+import * as P from '@konker.dev/effect-ts-prelude';
+
 import * as dynamodb from '@aws-sdk/client-dynamodb';
 import * as dynamodbDocClient from '@aws-sdk/lib-dynamodb';
 import type { Client, Command, HandlerOptions, HttpHandlerOptions } from '@aws-sdk/types';
-import * as P from '@konker.dev/effect-ts-prelude';
 import type { SmithyResolvedConfiguration } from '@smithy/smithy-client/dist-types';
 
 import type { DynamoDbError } from './lib/error';

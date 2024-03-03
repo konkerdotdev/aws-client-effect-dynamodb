@@ -24,7 +24,9 @@ export const defaultDynamoDBDocumentClientFactory: DynamoDBDocumentClientFactory
 export type DynamoDBFactoryDeps = {
   readonly dynamoDBClientFactory: DynamoDBClientFactory;
 };
-export const DynamoDBFactoryDeps = P.Context.Tag<DynamoDBFactoryDeps>('@dynamodb-doc-client-fp/DynamoDBFactoryDeps');
+export const DynamoDBFactoryDeps = P.Context.GenericTag<DynamoDBFactoryDeps>(
+  '@dynamodb-doc-client-fp/DynamoDBFactoryDeps'
+);
 
 export const defaultDynamoDBFactoryDeps = P.Effect.provideService(
   DynamoDBFactoryDeps,
@@ -37,7 +39,7 @@ export type DynamoDBDocumentClientFactoryDeps = {
   readonly dynamoDBClientFactory: DynamoDBClientFactory;
   readonly dynamoDBDocumentClientFactory: DynamoDBDocumentClientFactory;
 };
-export const DynamoDBDocumentClientFactoryDeps = P.Context.Tag<DynamoDBDocumentClientFactoryDeps>(
+export const DynamoDBDocumentClientFactoryDeps = P.Context.GenericTag<DynamoDBDocumentClientFactoryDeps>(
   'dynamodb-doc-client-fp/DynamoDBDocumentClientFactoryDeps'
 );
 
@@ -56,7 +58,7 @@ export type DynamoDBDocumentClientDeps = {
   >;
   readonly dynamoDBClient: P.LazyArg<dynamodb.DynamoDBClient>;
 };
-export const DynamoDBDocumentClientDeps = P.Context.Tag<DynamoDBDocumentClientDeps>(
+export const DynamoDBDocumentClientDeps = P.Context.GenericTag<DynamoDBDocumentClientDeps>(
   'dynamodb-doc-client-fp/DynamoDBDocumentClientDeps'
 );
 
@@ -80,7 +82,7 @@ export function FabricateCommandRTE<
 ): (
   params: I,
   options?: HttpHandlerOptions | undefined
-) => P.Effect.Effect<DynamoDBDocumentClientDeps, DynamoDbError, O & DynamoDBEchoParams<I>> {
+) => P.Effect.Effect<O & DynamoDBEchoParams<I>, DynamoDbError, DynamoDBDocumentClientDeps> {
   return function (params, options) {
     return P.pipe(
       DynamoDBDocumentClientDeps,

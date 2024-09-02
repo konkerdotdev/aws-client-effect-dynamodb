@@ -66,7 +66,7 @@ export type DynamoDBEchoParams<I> = { _Params: I };
 
 // --------------------------------------------------------------------------
 // Wrapper
-export function FabricateCommandRTE<
+export function FabricateCommandEffect<
   I extends dynamodbDocClient.ServiceInputTypes,
   O extends dynamodbDocClient.ServiceOutputTypes,
 >(
@@ -102,89 +102,91 @@ export function FabricateCommandRTE<
 
 // --------------------------------------------------------------------------
 // GetCommand
-export const GetCommandRTE = FabricateCommandRTE<dynamodbDocClient.GetCommandInput, dynamodbDocClient.GetCommandOutput>(
-  dynamodbDocClient.GetCommand
-);
+export const GetCommandEffect = FabricateCommandEffect<
+  dynamodbDocClient.GetCommandInput,
+  dynamodbDocClient.GetCommandOutput
+>(dynamodbDocClient.GetCommand);
 
 // --------------------------------------------------------------------------
 // PutCommand
-export const PutCommandRTE = FabricateCommandRTE<dynamodbDocClient.PutCommandInput, dynamodbDocClient.PutCommandOutput>(
-  dynamodbDocClient.PutCommand
-);
+export const PutCommandEffect = FabricateCommandEffect<
+  dynamodbDocClient.PutCommandInput,
+  dynamodbDocClient.PutCommandOutput
+>(dynamodbDocClient.PutCommand);
 
 // --------------------------------------------------------------------------
 // UpdateCommand
-export const UpdateCommandRTE = FabricateCommandRTE<
+export const UpdateCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.UpdateCommandInput,
   dynamodbDocClient.UpdateCommandOutput
 >(dynamodbDocClient.UpdateCommand);
 
 // --------------------------------------------------------------------------
 // DeleteCommand
-export const DeleteCommandRTE = FabricateCommandRTE<
+export const DeleteCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.DeleteCommandInput,
   dynamodbDocClient.DeleteCommandOutput
 >(dynamodbDocClient.DeleteCommand);
 
 // --------------------------------------------------------------------------
 // QueryCommand
-export const QueryCommandRTE = FabricateCommandRTE<
+export const QueryCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.QueryCommandInput,
   dynamodbDocClient.QueryCommandOutput
 >(dynamodbDocClient.QueryCommand);
 
 // --------------------------------------------------------------------------
 // ScanCommand
-export const ScanCommandRTE = FabricateCommandRTE<
+export const ScanCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.ScanCommandInput,
   dynamodbDocClient.ScanCommandOutput
 >(dynamodbDocClient.ScanCommand);
 
 // --------------------------------------------------------------------------
 // BatchGetCommand
-export const BatchGetCommandRTE = FabricateCommandRTE<
+export const BatchGetCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.BatchGetCommandInput,
   dynamodbDocClient.BatchGetCommandOutput
 >(dynamodbDocClient.BatchGetCommand);
 
 // --------------------------------------------------------------------------
 // BatchWriteCommand
-export const BatchWriteCommandRTE = FabricateCommandRTE<
+export const BatchWriteCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.BatchWriteCommandInput,
   dynamodbDocClient.BatchWriteCommandOutput
 >(dynamodbDocClient.BatchWriteCommand);
 
 // --------------------------------------------------------------------------
 // TransactGetCommand
-export const TransactGetCommandRTE = FabricateCommandRTE<
+export const TransactGetCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.TransactGetCommandInput,
   dynamodbDocClient.TransactGetCommandOutput
 >(dynamodbDocClient.TransactGetCommand);
 
 // --------------------------------------------------------------------------
 // TransactWriteCommand
-export const TransactWriteCommandRTE = FabricateCommandRTE<
+export const TransactWriteCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.TransactWriteCommandInput,
   dynamodbDocClient.TransactWriteCommandOutput
 >(dynamodbDocClient.TransactWriteCommand);
 
 // --------------------------------------------------------------------------
 // ExecuteStatementCommand
-export const ExecuteStatementCommandRTE = FabricateCommandRTE<
+export const ExecuteStatementCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.ExecuteStatementCommandInput,
   dynamodbDocClient.ExecuteStatementCommandOutput
 >(dynamodbDocClient.ExecuteStatementCommand);
 
 // --------------------------------------------------------------------------
 // ExecuteTransactionCommand
-export const ExecuteTransactionCommandRTE = FabricateCommandRTE<
+export const ExecuteTransactionCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.ExecuteTransactionCommandInput,
   dynamodbDocClient.ExecuteTransactionCommandOutput
 >(dynamodbDocClient.ExecuteTransactionCommand);
 
 // --------------------------------------------------------------------------
 // BatchExecuteStatementCommand
-export const BatchExecuteStatementCommandRTE = FabricateCommandRTE<
+export const BatchExecuteStatementCommandEffect = FabricateCommandEffect<
   dynamodbDocClient.BatchExecuteStatementCommandInput,
   dynamodbDocClient.BatchExecuteStatementCommandOutput
 >(dynamodbDocClient.BatchExecuteStatementCommand);

@@ -15,12 +15,13 @@
   },
   "keywords": [
     "node",
-    "boilerplate",
+    "AWS",
+    "DynamoDB",
     "typescript",
     "functional-programming",
     "effect-ts"
   ],
-  "packageManager": "pnpm@8",
+  "packageManager": "pnpm@9",
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.451.0",
     "@aws-sdk/lib-dynamodb": "^3.451.0",

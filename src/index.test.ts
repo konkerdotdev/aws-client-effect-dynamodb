@@ -1,39 +1,14 @@
 import * as P from '@konker.dev/effect-ts-prelude';
 
-import * as dynamodb from '@aws-sdk/client-dynamodb';
 import * as dynamodbLib from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 
 import * as unit from './index';
-import { defaultDynamoDBDocumentClientDeps, DynamoDBDocumentClientDeps } from './index';
+import { defaultDynamoDBDocumentClientDeps } from './lib/client';
 
 const ddbMock = mockClient(dynamodbLib.DynamoDBDocumentClient);
 
 describe('aws-client-effect-dynamodb', () => {
-  // ------------------------------------------------------------------------
-  describe('Factories', () => {
-    test('defaultDynamoDBClientFactory work as expected', async () => {
-      expect(unit.defaultDynamoDBClientFactory({})).toBeInstanceOf(dynamodb.DynamoDBClient);
-    });
-
-    test('defaultDynamoDBDocumentClientFactory work as expected', async () => {
-      expect(unit.defaultDynamoDBDocumentClientFactory(unit.defaultDynamoDBClientFactory({}))).toBeInstanceOf(
-        dynamodbLib.DynamoDBDocumentClient
-      );
-    });
-
-    test('defaultDynamoDBDocumentClientDeps work as expected', async () => {
-      const actual = unit.defaultDynamoDBDocumentClientDeps({});
-      const actualUnwrapped = P.pipe(
-        DynamoDBDocumentClientDeps,
-        P.Effect.map((deps) => deps.dynamoDBClient()),
-        actual
-      );
-
-      expect(P.Effect.runSync(actualUnwrapped)).toBeInstanceOf(dynamodb.DynamoDBClient);
-    });
-  });
-
   // ------------------------------------------------------------------------
   describe('GetCommand', () => {
     beforeEach(() => {

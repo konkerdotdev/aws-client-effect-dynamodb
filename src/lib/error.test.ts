@@ -9,7 +9,7 @@ describe('error', () => {
     const error = new Error('BOOM!');
     const params: GetCommandInput = { TableName: 't1', Key: {} };
     const actual = P.pipe(error, unit.toDynamoDbError(params));
-    const expected = { message: 'BOOM!', cause: error, _tag: 'DynamoDbError', _Params: params };
+    const expected = { name: 'BOOM!', message: 'BOOM!', cause: error, _tag: 'DynamoDbError', _Params: params };
     expect(actual).toStrictEqual(expected);
   });
 
@@ -17,7 +17,7 @@ describe('error', () => {
     const error = 'BOOM!';
     const params: GetCommandInput = { TableName: 't1', Key: {} };
     const actual = P.pipe(error, unit.toDynamoDbError(params));
-    const expected = { message: 'BOOM!', cause: error, _tag: 'DynamoDbError', _Params: params };
+    const expected = { name: 'DynamoDbError', message: 'BOOM!', cause: error, _tag: 'DynamoDbError', _Params: params };
     expect(actual).toStrictEqual(expected);
   });
 });

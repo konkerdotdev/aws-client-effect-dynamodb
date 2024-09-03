@@ -1,6 +1,6 @@
 {
   "name": "@konker.dev/aws-client-effect-dynamodb",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Konrad Markus <mail@konker.dev>",
   "description": "AWS DynamoDB client for Node.js TypeScript projects based on Effect-ts",
   "license": "ISC",

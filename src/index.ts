@@ -8,8 +8,7 @@ import type { SmithyResolvedConfiguration } from '@smithy/smithy-client/dist-typ
 import type { DynamoDbError } from './lib/error';
 import { toDynamoDbError } from './lib/error';
 
-export const DYNAMODB_ERROR_CONDITIONAL_CHECK_FAILED = 'ConditionalCheckFailedException';
-
+//------------------------------------------------------
 export type DynamoDBClientFactory = (config: dynamodb.DynamoDBClientConfig) => dynamodb.DynamoDBClient;
 export const defaultDynamoDBClientFactory: DynamoDBClientFactory = (config: dynamodb.DynamoDBClientConfig) =>
   new dynamodb.DynamoDBClient(config);
@@ -17,33 +16,34 @@ export const defaultDynamoDBClientFactory: DynamoDBClientFactory = (config: dyna
 export type DynamoDBDocumentClientFactory = (
   dynamodbClient: dynamodb.DynamoDBClient
 ) => dynamodbDocClient.DynamoDBDocumentClient;
-export const defaultDynamoDBDocumentClientFactory: DynamoDBDocumentClientFactory = (
-  dynamodbClient: dynamodb.DynamoDBClient
-) => dynamodbDocClient.DynamoDBDocumentClient.from(dynamodbClient);
+export const defaultDynamoDBDocumentClientFactory = (dynamodbClient: dynamodb.DynamoDBClient) =>
+  dynamodbDocClient.DynamoDBDocumentClient.from(dynamodbClient);
 
-export type DynamoDBFactoryDeps = {
+//------------------------------------------------------
+export type DynamoDBClientFactoryDeps = {
   readonly dynamoDBClientFactory: DynamoDBClientFactory;
 };
-export const DynamoDBFactoryDeps = P.Context.GenericTag<DynamoDBFactoryDeps>(
-  '@dynamodb-doc-client-fp/DynamoDBFactoryDeps'
+export const DynamoDBClientFactoryDeps = P.Context.GenericTag<DynamoDBClientFactoryDeps>(
+  'aws-client-effect-dynamodb/DynamoDBFactoryDeps'
 );
 
-export const defaultDynamoDBFactoryDeps = P.Effect.provideService(
-  DynamoDBFactoryDeps,
-  DynamoDBFactoryDeps.of({
+export const defaultDynamoDBClientFactoryDeps = P.Effect.provideService(
+  DynamoDBClientFactoryDeps,
+  DynamoDBClientFactoryDeps.of({
     dynamoDBClientFactory: defaultDynamoDBClientFactory,
   })
 );
 
+//------------------------------------------------------
 export type DynamoDBDocumentClientFactoryDeps = {
   readonly dynamoDBClientFactory: DynamoDBClientFactory;
   readonly dynamoDBDocumentClientFactory: DynamoDBDocumentClientFactory;
 };
 export const DynamoDBDocumentClientFactoryDeps = P.Context.GenericTag<DynamoDBDocumentClientFactoryDeps>(
-  'dynamodb-doc-client-fp/DynamoDBDocumentClientFactoryDeps'
+  'aws-client-effect-dynamodb/DynamoDBDocumentClientFactoryDeps'
 );
 
-export const defaultDynamoDBDocClientFactoryDeps = P.Effect.provideService(
+export const defaultDynamoDBDocumentClientFactoryDeps = P.Effect.provideService(
   DynamoDBDocumentClientFactoryDeps,
   DynamoDBDocumentClientFactoryDeps.of({
     dynamoDBClientFactory: defaultDynamoDBClientFactory,
@@ -59,12 +59,24 @@ export type DynamoDBDocumentClientDeps = {
   readonly dynamoDBClient: P.LazyArg<dynamodb.DynamoDBClient>;
 };
 export const DynamoDBDocumentClientDeps = P.Context.GenericTag<DynamoDBDocumentClientDeps>(
-  'dynamodb-doc-client-fp/DynamoDBDocumentClientDeps'
+  'aws-client-effect-dynamodb/DynamoDBDocumentClientDeps'
 );
 
-export type DynamoDBEchoParams<I> = { _Params: I };
+export const defaultDynamoDBDocumentClientDeps = (config: dynamodb.DynamoDBClientConfig) => {
+  const defaultClient = defaultDynamoDBClientFactory(config);
+
+  return P.Effect.provideService(
+    DynamoDBDocumentClientDeps,
+    DynamoDBDocumentClientDeps.of({
+      dynamoDBClient: () => defaultClient,
+      dynamoDBDocumentClient: () => defaultDynamoDBDocumentClientFactory(defaultClient),
+    })
+  );
+};
 
 // --------------------------------------------------------------------------
+export type DynamoDBEchoParams<I> = { _Params: I };
+
 // Wrapper
 export function FabricateCommandEffect<
   I extends dynamodbDocClient.ServiceInputTypes,

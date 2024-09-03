@@ -50,7 +50,7 @@ describe('aws-client-effect-dynamodb/lib/client', () => {
     test('defaultDynamoDBDocumentClientDeps works as expected', async () => {
       const actualEffect = P.pipe(
         unit.DynamoDBDocumentClientDeps,
-        P.Effect.map((deps) => [deps.dynamoDBClient(), deps.dynamoDBDocumentClient()]),
+        P.Effect.map((deps) => [deps.dynamoDBClient, deps.dynamoDBDocumentClient]),
         unit.defaultDynamoDBDocumentClientDeps({})
       );
       const actual = P.Effect.runSync(actualEffect);
@@ -68,7 +68,7 @@ describe('aws-client-effect-dynamodb/lib/client', () => {
         P.Effect.flatMap((deps) =>
           P.pipe(
             DynamoDBDocumentClientDeps,
-            P.Effect.map((unwrappedDeps) => [unwrappedDeps.dynamoDBClient(), unwrappedDeps.dynamoDBDocumentClient()]),
+            P.Effect.map((unwrappedDeps) => [unwrappedDeps.dynamoDBClient, unwrappedDeps.dynamoDBDocumentClient]),
             P.Effect.provideService(DynamoDBDocumentClientDeps, deps)
           )
         ),

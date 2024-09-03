@@ -36,7 +36,7 @@ export function FabricateCommandEffect<
         P.Effect.tryPromise({
           try: async () => {
             const cmd = new cmdCtor(params);
-            const result = await deps.dynamoDBDocumentClient().send(cmd, options);
+            const result = await deps.dynamoDBDocumentClient.send(cmd, options);
             return { ...result, _Params: params };
           },
           catch: toDynamoDbError(params),

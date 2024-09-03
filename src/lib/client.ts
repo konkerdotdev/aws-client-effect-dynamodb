@@ -55,10 +55,12 @@ export const defaultDynamoDBDocumentClientFactoryDeps = P.Effect.provideService(
 
 //------------------------------------------------------
 export type DynamoDBDocumentClientDeps = {
-  readonly dynamoDBDocumentClient: P.LazyArg<
-    Client<dynamodbDocClient.ServiceInputTypes, dynamodbDocClient.ServiceOutputTypes, unknown>
+  readonly dynamoDBDocumentClient: Client<
+    dynamodbDocClient.ServiceInputTypes,
+    dynamodbDocClient.ServiceOutputTypes,
+    unknown
   >;
-  readonly dynamoDBClient: P.LazyArg<dynamodb.DynamoDBClient>;
+  readonly dynamoDBClient: dynamodb.DynamoDBClient;
 };
 export const DynamoDBDocumentClientDeps = P.Context.GenericTag<DynamoDBDocumentClientDeps>(
   'aws-client-effect-dynamodb/DynamoDBDocumentClientDeps'
@@ -71,8 +73,8 @@ export const defaultDynamoDBDocumentClientDeps = (config: dynamodb.DynamoDBClien
   return P.Effect.provideService(
     DynamoDBDocumentClientDeps,
     DynamoDBDocumentClientDeps.of({
-      dynamoDBClient: () => defaultClientHandle,
-      dynamoDBDocumentClient: () => defaultDocClientHandle,
+      dynamoDBClient: defaultClientHandle,
+      dynamoDBDocumentClient: defaultDocClientHandle,
     })
   );
 };
@@ -86,8 +88,8 @@ export const createDynamoDBDocumentClientDeps =
         const clientHandle = factoryDeps.dynamoDBClientFactory(config);
         const docClientHandle = factoryDeps.dynamoDBDocumentClientFactory(clientHandle);
         return DynamoDBDocumentClientDeps.of({
-          dynamoDBClient: () => clientHandle,
-          dynamoDBDocumentClient: () => docClientHandle,
+          dynamoDBClient: clientHandle,
+          dynamoDBDocumentClient: docClientHandle,
         });
       },
       catch: toDynamoDbError({}),
@@ -99,9 +101,9 @@ export const cleanupDynamoDBDocumentClientDeps = (deps: DynamoDBDocumentClientDe
     // eslint-disable-next-line fp/no-nil
     try: async () => {
       // eslint-disable-next-line fp/no-unused-expression
-      deps.dynamoDBDocumentClient().destroy();
+      deps.dynamoDBDocumentClient.destroy();
       // eslint-disable-next-line fp/no-unused-expression
-      deps.dynamoDBClient().destroy();
+      deps.dynamoDBClient.destroy();
     },
     catch: toDynamoDbError({}),
   });

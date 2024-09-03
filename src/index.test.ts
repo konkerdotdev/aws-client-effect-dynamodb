@@ -5,20 +5,11 @@ import * as dynamodbLib from '@aws-sdk/lib-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 
 import * as unit from './index';
+import { defaultDynamoDBDocumentClientDeps, DynamoDBDocumentClientDeps } from './index';
 
 const ddbMock = mockClient(dynamodbLib.DynamoDBDocumentClient);
 
 describe('aws-client-effect-dynamodb', () => {
-  let dynamoDBClient: P.LazyArg<dynamodb.DynamoDBClient>;
-  let dynamoDBDocumentClient: P.LazyArg<dynamodbLib.DynamoDBDocumentClient>;
-  let deps: unit.DynamoDBDocumentClientDeps;
-
-  beforeAll(() => {
-    dynamoDBClient = () => new dynamodb.DynamoDBClient({});
-    dynamoDBDocumentClient = () => dynamodbLib.DynamoDBDocumentClient.from(dynamoDBClient());
-    deps = unit.DynamoDBDocumentClientDeps.of({ dynamoDBClient, dynamoDBDocumentClient });
-  });
-
   // ------------------------------------------------------------------------
   describe('Factories', () => {
     test('defaultDynamoDBClientFactory work as expected', async () => {
@@ -29,6 +20,17 @@ describe('aws-client-effect-dynamodb', () => {
       expect(unit.defaultDynamoDBDocumentClientFactory(unit.defaultDynamoDBClientFactory({}))).toBeInstanceOf(
         dynamodbLib.DynamoDBDocumentClient
       );
+    });
+
+    test('defaultDynamoDBDocumentClientDeps work as expected', async () => {
+      const actual = unit.defaultDynamoDBDocumentClientDeps({});
+      const actualUnwrapped = P.pipe(
+        DynamoDBDocumentClientDeps,
+        P.Effect.map((deps) => deps.dynamoDBClient()),
+        actual
+      );
+
+      expect(P.Effect.runSync(actualUnwrapped)).toBeInstanceOf(dynamodb.DynamoDBClient);
     });
   });
 
@@ -44,10 +46,7 @@ describe('aws-client-effect-dynamodb', () => {
       });
 
       const params = { TableName: 't1', Key: {} };
-      const command = P.pipe(
-        unit.GetCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.GetCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Item: { id: 'user1', name: 'John' },
         _Params: params,
@@ -59,7 +58,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.GetCommandEffect({ TableName: 't1', Key: {} }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -75,10 +74,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.PutCommand).resolves({ Attributes: { foo: 'bar' } });
 
       const params = { TableName: 't1', Item: {} };
-      const command = P.pipe(
-        unit.PutCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.PutCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Attributes: { foo: 'bar' },
         _Params: params,
@@ -90,7 +86,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.PutCommandEffect({ TableName: 't1', Item: {} }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -106,10 +102,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.UpdateCommand).resolves({ Attributes: { foo: 'bar' } });
 
       const params = { TableName: 't1', Key: {} };
-      const command = P.pipe(
-        unit.UpdateCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.UpdateCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Attributes: { foo: 'bar' },
         _Params: params,
@@ -121,7 +114,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.UpdateCommandEffect({ TableName: 't1', Key: {} }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -137,10 +130,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.DeleteCommand).resolves({ Attributes: { foo: 'bar' } });
 
       const params = { TableName: 't1', Key: {} };
-      const command = P.pipe(
-        unit.DeleteCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.DeleteCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Attributes: { foo: 'bar' },
         _Params: params,
@@ -152,7 +142,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.DeleteCommandEffect({ TableName: 't1', Key: {} }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -168,10 +158,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.QueryCommand).resolves({ Items: [{ foo: 'bar' }] });
 
       const params = { TableName: 't1', IndexName: 'fooIndex' };
-      const command = P.pipe(
-        unit.QueryCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.QueryCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Items: [{ foo: 'bar' }],
         _Params: params,
@@ -183,7 +170,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.QueryCommandEffect({ TableName: 't1', IndexName: 'fooIndex' }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -199,10 +186,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.ScanCommand).resolves({ Items: [{ foo: 'bar' }] });
 
       const params = { TableName: 't1', IndexName: 'fooIndex' };
-      const command = P.pipe(
-        unit.ScanCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.ScanCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Items: [{ foo: 'bar' }],
         _Params: params,
@@ -214,7 +198,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.ScanCommandEffect({ TableName: 't1', IndexName: 'fooIndex' }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -230,10 +214,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.BatchGetCommand).resolves({ Responses: { t1: [{ foo: 'bar' }] } });
 
       const params = { RequestItems: { t1: { Keys: [{ foo: 'bar' }] } } };
-      const command = P.pipe(
-        unit.BatchGetCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.BatchGetCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Responses: { t1: [{ foo: 'bar' }] },
         _Params: params,
@@ -245,7 +226,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.BatchGetCommandEffect({ RequestItems: { t1: { Keys: [{ foo: 'bar' }] } } }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -261,10 +242,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.BatchWriteCommand).resolves({ UnprocessedItems: {} });
 
       const params = { RequestItems: { t1: [{ PutRequest: { Item: {} } }] } };
-      const command = P.pipe(
-        unit.BatchWriteCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.BatchWriteCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         UnprocessedItems: {},
         _Params: params,
@@ -276,7 +254,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.BatchWriteCommandEffect({ RequestItems: { t1: [{ PutRequest: { Item: {} } }] } }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -292,10 +270,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.TransactGetCommand).resolves({ Responses: [{ Item: { foo: 'bar' } }] });
 
       const params = { TransactItems: [{ Get: { TableName: 't1', Key: {} } }] };
-      const command = P.pipe(
-        unit.TransactGetCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.TransactGetCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Responses: [{ Item: { foo: 'bar' } }],
         _Params: params,
@@ -307,7 +282,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.TransactGetCommandEffect({ TransactItems: [{ Get: { TableName: 't1', Key: {} } }] }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -323,10 +298,7 @@ describe('aws-client-effect-dynamodb', () => {
       ddbMock.on(dynamodbLib.TransactWriteCommand).resolves({ ItemCollectionMetrics: {} });
 
       const params = { TransactItems: [{ Put: { TableName: 't1', Item: {} } }] };
-      const command = P.pipe(
-        unit.TransactWriteCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.TransactWriteCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         ItemCollectionMetrics: {},
         _Params: params,
@@ -338,7 +310,7 @@ describe('aws-client-effect-dynamodb', () => {
 
       const command = P.pipe(
         unit.TransactWriteCommandEffect({ TransactItems: [{ Put: { TableName: 't1', Item: {} } }] }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -357,10 +329,7 @@ describe('aws-client-effect-dynamodb', () => {
         Statement: 'SELECT * FROM t1 where foo=?',
         Parameters: [{ S: 'bar' }],
       };
-      const command = P.pipe(
-        unit.ExecuteStatementCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.ExecuteStatementCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Items: [{ foo: 'bar' }],
         _Params: params,
@@ -375,7 +344,7 @@ describe('aws-client-effect-dynamodb', () => {
           Statement: 'SELECT * FROM t1 where foo=?',
           Parameters: [{ S: 'bar' }],
         }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -404,10 +373,7 @@ describe('aws-client-effect-dynamodb', () => {
           },
         ],
       };
-      const command = P.pipe(
-        unit.ExecuteTransactionCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.ExecuteTransactionCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Responses: [{ Item: [{ foo: 'bar' }, { foo: 'baz' }] }],
         _Params: params,
@@ -430,7 +396,7 @@ describe('aws-client-effect-dynamodb', () => {
             },
           ],
         }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
@@ -459,10 +425,7 @@ describe('aws-client-effect-dynamodb', () => {
           },
         ],
       };
-      const command = P.pipe(
-        unit.BatchExecuteStatementCommandEffect(params),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
-      );
+      const command = P.pipe(unit.BatchExecuteStatementCommandEffect(params), defaultDynamoDBDocumentClientDeps({}));
       expect(await P.Effect.runPromise(command)).toStrictEqual({
         Responses: [{ Item: [{ foo: 'bar' }, { foo: 'baz' }] }],
         _Params: params,
@@ -486,7 +449,7 @@ describe('aws-client-effect-dynamodb', () => {
             },
           ],
         }),
-        P.Effect.provideService(unit.DynamoDBDocumentClientDeps, deps)
+        defaultDynamoDBDocumentClientDeps({})
       );
       await expect(P.Effect.runPromise(command)).rejects.toThrow('BOOM!');
     });
